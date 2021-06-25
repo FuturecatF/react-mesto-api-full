@@ -1,0 +1,6 @@
+.element__footer {
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  border-radius: 0 0 10px 10px;
+}

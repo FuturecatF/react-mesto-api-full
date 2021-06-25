@@ -1,0 +1,42 @@
+.profile__add-button {
+  background-image: url(../../../images/add-button.svg);
+  background-repeat: no-repeat;
+  background-color: transparent;
+  background-position: 50%;
+  width: 150px;
+  height: 50px;
+  justify-self: flex-end;
+  margin-left: auto;
+  align-self: center;
+  outline: 0;
+  border: 2px solid #FFFFFF;
+  border-radius: 2px;
+}
+
+@media (hover: hover) {
+  .profile__add-button:hover {
+    opacity: .6;
+    cursor: pointer;
+  }
+}
+@media (hover: none) {
+  .profile__add-button:active {
+    opacity: .6;
+  }
+}
+
+
+@media screen and (max-width: 890px) {
+  .profile__add-button {
+    margin-left: 0;
+    margin-top: 36px;
+    max-width: 580px;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 645px) {
+  .profile__add-button {
+    max-width: 282px;
+  }
+}

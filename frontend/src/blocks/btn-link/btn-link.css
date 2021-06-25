@@ -1,0 +1,19 @@
+.btn-link {
+  cursor: pointer;
+  text-decoration: none;
+  color: #ffffff;
+  padding: 0;
+  margin: auto;
+}
+
+@media (hover: hover) {
+  .btn-link:hover {
+    opacity: 0.6;
+  }
+}
+
+@media (hover: none) {
+  .btn-link:active {
+    opacity: 0.6;
+  }
+}
