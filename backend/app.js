@@ -2,11 +2,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
+const cors = require('cors');
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const cors = require('./middlewares/cors');
 
 const { PORT = 3000 } = process.env;
+
+const corsOptions = {
+  origin: 'https://futurecat.nomoredomains.club',
+};
 
 const app = express();
 
@@ -22,10 +26,10 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
   useUnifiedTopology: true,
 });
-
+app.use(cors(corsOptions));
 app.use(errors());
 app.use(requestLogger);
-app.use(cors());
+
 app.post('/signin', login);
 app.post('/signup', createUser);
 
