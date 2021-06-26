@@ -1,4 +1,4 @@
-const BASE_URL = "https://auth.nomoreparties.co";
+const BASE_URL = "https://api.futurecat.nomoredomains.club";
 const headers = { "Content-Type": "application/json" };
 
 function getResponseData(res) {
