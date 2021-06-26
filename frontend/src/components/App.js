@@ -38,28 +38,38 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [email, setEmail] = React.useState("");
 
-  React.useEffect(() => {
-    Promise.all([api.getUserProfile(), api.getInitialCards()])
-      .then(([data, cards]) => {
-        setCurrentUser(data);
-        setInitialCards(cards);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+  /*  React.useEffect(() => {
+    
+          Promise.all([api.getUserProfile(), api.getInitialCards()])
+          .then(([data, cards]) => {
+            setCurrentUser(data);
+            setInitialCards(cards);
+          })
+        
 
-  function handleCardLike(card) {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+  .catch((err) => {
+    console.log(err);
+  });
+
+          
+  }, []);  */
+
+  
+
+  function handleCardLike(data) {
+    const isLiked = data.likes.some(i => i === currentUser._id);
+    console.log(isLiked);
     api
-      .changeLikeCardStatus(card._id, !isLiked)
+      .changeLikeCardStatus(data._id, !isLiked)
       .then((newCard) => {
-        setInitialCards((state) =>
-          state.map((c) => (c._id === card._id ? newCard : c))
-        );
+        const newCards = cards.map((c) => c._id === data._id ? newCard : c);
+        setInitialCards(newCards);
+       /*  setInitialCards((state) =>
+        state.map((c) => (c._id === card._id ? newCard : c))
+        ); */
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.message);
       });
   }
 
@@ -85,8 +95,8 @@ function App() {
     setDeletedCard({});
   }
 
-  function handleCardClick(card) {
-    setSelectedCard(card);
+  function handleCardClick(data) {
+    setSelectedCard(data);
   }
 
   function handleDeleteClick(card) {
@@ -94,14 +104,14 @@ function App() {
     setDeletedCard(card);
   }
 
-  function handleCardDelete() {
+  function handleCardDelete(card) {
     setIsSaving(true);
 
     api
-      .deleteCard(deletedCard._id)
+      .deleteCard(card._id)
 
       .then(() => {
-        setInitialCards((cards) =>
+        setInitialCards((card) =>
           cards.filter((c) => c._id !== deletedCard._id)
         );
       })
@@ -134,7 +144,7 @@ function App() {
     setIsSaving(true);
     api
       .postNewCard(card)
-      .then((card) => setInitialCards([card, ...cards]))
+      .then((newCard) => setInitialCards([newCard, ...cards]))
       .then(() => closeAllPopups())
       .catch((err) => console.log(err))
       .finally(() => setIsSaving(false));
@@ -189,7 +199,7 @@ function App() {
 
   React.useEffect(() => {
     handleTokenCheck();
-  }, []);
+  }, [isLoggedIn]);
 
   const handleTokenCheck = () => {
     const jwt = localStorage.getItem("jwt");
@@ -214,11 +224,28 @@ function App() {
     }
   };
 
+  
+
   React.useEffect(() => {
     if (isLoggedIn) {
       history.push("/");
     }
   }, [isLoggedIn, history]);
+
+  React.useEffect(() => {
+    if (isLoggedIn) {
+      Promise.all([api.getUserProfile(), api.getInitialCards() ])
+        .then(([userData, cardsData]) => {
+          setCurrentUser(userData.data);
+          // console.log(userData.data)
+          // console.log(cardsData.data)
+          setInitialCards(cardsData.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [isLoggedIn]);
 
   function onSignOut() {
     localStorage.removeItem("jwt");
@@ -282,7 +309,7 @@ function App() {
             isSaving={isSaving}
           />
 
-          <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+          <ImagePopup data={selectedCard} onClose={closeAllPopups} />
 
           <ConfirmPopup
             isOpen={isConfirmPopupOpen}

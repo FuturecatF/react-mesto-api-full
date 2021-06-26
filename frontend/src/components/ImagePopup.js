@@ -1,9 +1,9 @@
 import React from "react";
 
-function ImagePopup({ card, onClose }) {
+function ImagePopup({ data, onClose }) {
   return (
     <div
-      className={`popup popup_type_image ${card.link ? "popup_opened" : ""}`}
+      className={`popup popup_type_image ${data.link ? "popup_opened" : ""}`}
     >
       <figure className='photo'>
         <button
@@ -12,8 +12,8 @@ function ImagePopup({ card, onClose }) {
           aria-label='Закрыть попап'
           onClick={onClose}
         ></button>
-        <img className='photo__item' src={card.link} alt={card.name} />
-        <figcaption className='photo__subtitle'>{card.name}</figcaption>
+        <img className='photo__item' src={data.link} alt={data.name} />
+        <figcaption className='photo__subtitle'>{data.name}</figcaption>
       </figure>
     </div>
   );

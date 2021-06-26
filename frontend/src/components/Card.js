@@ -1,10 +1,11 @@
 import React from "react";
 import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
 
-function Card({ card, onCardLike, onCardDelete, onCardClick }) {
+function Card({ data, onCardLike, onCardDelete, onCardClick }) {
   const currentUser = React.useContext(CurrentUserContext);
-  const isOwn = card.owner._id === currentUser._id;
-  const isLiked = card.likes.some((i) => i._id === currentUser._id);
+  const isOwn = data.owner === currentUser._id;
+  const isLiked = data.likes.some(i => i === currentUser._id);
+  console.log(data.likes.some)
   const cardDeleteButtonClassName = `element__delete-icon ${
     isOwn ? "element__delete-icon" : ""
   }`;
@@ -13,21 +14,21 @@ function Card({ card, onCardLike, onCardDelete, onCardClick }) {
   }`;
 
   function handleLikeClick() {
-    onCardLike(card);
+    onCardLike(data);
   }
 
   function handleDeleteClick() {
-    onCardDelete(card);
-  }
+    onCardDelete(data);
+  };
 
   function handleClick() {
-    onCardClick(card);
+    onCardClick(data);
   }
 
   return (
-    <li className='element'>
+    <li className='element' key={data._id}>
       <div onClick={handleClick}>
-        <img className='element__photo' src={card.link} alt={card.name} />
+        <img className='element__photo' src={data.link} alt={data.name} />
       </div>
       {isOwn && <button
         className={cardDeleteButtonClassName}
@@ -36,7 +37,7 @@ function Card({ card, onCardLike, onCardDelete, onCardClick }) {
         onClick={handleDeleteClick}
       ></button> }
       <div className='element__footer'>
-        <h2 className='element__subtitle'>{card.name}</h2>
+        <h2 className='element__subtitle'>{data.name}</h2>
         <div className='element__likes-container'>
           <button
             className={cardLikeButtonClassName}
@@ -44,11 +45,13 @@ function Card({ card, onCardLike, onCardDelete, onCardClick }) {
             aria-label='Лайк'
             onClick={handleLikeClick}
           ></button>
-          <span className='element__count-likes'>{card.likes.length}</span>
+          <span className='element__count-likes'>{data.likes.length}</span>
         </div>
       </div>
     </li>
   );
+
+
 }
 
 export default Card;
