@@ -1,6 +1,6 @@
 const allowedCors = [
-  'https://praktikum.tk',
-  'http://praktikum.tk',
+  'https://api.futurecat.nomoredomains.club',
+  'http://api.futurecat.nomoredomains.club',
   'localhost:3000',
 ];
 
