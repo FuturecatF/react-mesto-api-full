@@ -25,7 +25,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(errors());
 app.use(requestLogger);
-app.use(cors);
+app.use(cors());
 app.post('/signin', login);
 app.post('/signup', createUser);
 
