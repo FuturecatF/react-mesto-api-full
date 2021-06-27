@@ -39,15 +39,51 @@ function App() {
   const [email, setEmail] = React.useState("");
 
   React.useEffect(() => {
-    Promise.all([api.getUserProfile(), api.getInitialCards()])
-      .then(([data, cards]) => {
-        setCurrentUser(data.data);
-        setInitialCards(cards.data);
+    if (isLoggedIn) {
+      api.getUserProfile()
+      .then((data) => {
+        setCurrentUser(data)    
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+    }
+  }, [isLoggedIn]);
+
+  React.useEffect(() => {
+    if (isLoggedIn) {
+     api.getInitialCards()
+      .then((cards) => { 
+        setInitialCards(cards);
       })
       .catch((err) => {
         console.log(err);
       });
+    }
   }, [isLoggedIn]);
+
+  const handleTokenCheck = () => {
+    const jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      auth
+        .checkToken(jwt)
+        .then((data) => {
+          if (data) {
+            setEmail(data.email);
+            setIsLoggedIn(true);
+          }
+        })
+        .catch((err) => {
+          console.log(err.status);
+          if (err.status === 401) {
+            return console.log("Переданный токен некорректен ");
+          } else if (!jwt) {
+            return console.log("Токен не передан или передан не в том формате");
+          }
+          return console.log("error 500");
+        });
+    }
+  };
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) =>  i === currentUser._id );
@@ -191,28 +227,7 @@ function App() {
     handleTokenCheck();
   }, []);
 
-  const handleTokenCheck = () => {
-    const jwt = localStorage.getItem("jwt");
-    if (jwt) {
-      auth
-        .checkToken(jwt)
-        .then((data) => {
-          if (data) {
-            setEmail(data.data.email);
-            setIsLoggedIn(true);
-          }
-        })
-        .catch((err) => {
-          console.log(err.status);
-          if (err.status === 401) {
-            return console.log("Переданный токен некорректен ");
-          } else if (!jwt) {
-            return console.log("Токен не передан или передан не в том формате");
-          }
-          return console.log("error 500");
-        });
-    }
-  };
+  
 
   React.useEffect(() => {
     if (isLoggedIn) {

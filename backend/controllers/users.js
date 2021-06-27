@@ -65,7 +65,7 @@ module.exports.login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, 'secret-slovo', {
         expiresIn: '7d',
       });
-      return res.send({ token });
+      return res.send(token);
     })
     .catch(() => {
       throw new UnauthorizedError('Неправильные почта или пароль');
