@@ -9,14 +9,14 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch(next);
 };
 
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(new NotFoundError('Нет пользователя с таким _id'))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new CastError('Передан некорректный _id');
@@ -78,7 +78,7 @@ module.exports.getCurrentUser = (req, res, next) => {
   return User.findOne({ _id })
     .orFail(new NotFoundError('Нет пользователя с таким _id'))
     .then((user) => {
-      res.status(200).send({ data: user });
+      res.status(200).send(user);
     })
     .catch((err) => {
       throw new NotFoundError(err.message);
@@ -97,7 +97,7 @@ module.exports.updateProfile = (req, res, next) => {
     },
   )
     .orFail(new NotFoundError('Пользователь с указанным _id не найден'))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new CastError('Переданы некорректные данные при обновлении профиля');
@@ -120,7 +120,7 @@ module.exports.updateAvatar = (req, res, next) => {
     },
   )
     .orFail(new NotFoundError('Пользователь с указанным _id не найден'))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new CastError('Переданы некорректные данные при обновлении аватара');
