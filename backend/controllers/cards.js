@@ -50,7 +50,7 @@ module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-    { new: true },
+    { new: true, runValidators: true },
   )
     .orFail(new NotFoundError('Нет карточки с таким id'))
     .then((card) => {
@@ -69,10 +69,10 @@ module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true },
+    { new: true, runValidators: true },
   )
     .orFail(new NotFoundError('Нет карточки с таким id'))
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new CastError('Переданы некорректные данные при снятии лайка');
