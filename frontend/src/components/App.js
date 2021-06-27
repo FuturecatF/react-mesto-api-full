@@ -60,7 +60,7 @@ function App() {
         .then(([userData, cardsData]) => {
           setCurrentUser(userData.data);
   
-          setInitialCards(cardsData.data);
+          setInitialCards(cardsData);
         })
         .catch((err) => {
           console.log(err);
@@ -112,19 +112,19 @@ function App() {
     setSelectedCard(data);
   }
 
-  function handleDeleteClick(card) {
+  function handleDeleteClick(data) {
     setIsConfirmPopupOpen(true);
-    setDeletedCard(card);
+    setDeletedCard(data);
   }
 
-  function handleCardDelete(card) {
+  function handleCardDelete(data) {
     setIsSaving(true);
 
     api
-      .deleteCard(card._id)
+      .deleteCard(data._id)
 
       .then(() => {
-        setInitialCards((card) =>
+        setInitialCards((data) =>
           cards.filter((c) => c._id !== deletedCard._id)
         );
       })
