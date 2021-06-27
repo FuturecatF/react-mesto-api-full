@@ -54,20 +54,33 @@ function App() {
           
   }, []);  */
 
+  React.useEffect(() => {
+    if (isLoggedIn) {
+      Promise.all([api.getUserProfile(), api.getInitialCards() ])
+        .then(([userData, cardsData]) => {
+          setCurrentUser(userData.data);
   
-
+          setInitialCards(cardsData.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [isLoggedIn]);
+  
+  
   function handleCardLike(data) {
-    const isLiked = data.likes.some(i => i === currentUser._id);
-    console.log(isLiked);
+    console.log(data._id);
+    const isLiked = data.likes.find(item => item === currentUser.id);
     api
       .changeLikeCardStatus(data._id, !isLiked)
       .then((newCard) => {
-        const newCards = cards.map((c) => c._id === data._id ? newCard : c);
-        setInitialCards(newCards);
-       /*  setInitialCards((state) =>
-        state.map((c) => (c._id === card._id ? newCard : c))
-        ); */
-      })
+        /* const newCards = cards.map((c) => c._id === data._id ? newCard : c);
+        setInitialCards(newCards) */
+          setInitialCards(state =>
+        state.map((c) => c._id === data._id ? newCard : c)
+        ); 
+      })  
       .catch((err) => {
         console.log(err.message);
       });
@@ -232,20 +245,7 @@ function App() {
     }
   }, [isLoggedIn, history]);
 
-  React.useEffect(() => {
-    if (isLoggedIn) {
-      Promise.all([api.getUserProfile(), api.getInitialCards() ])
-        .then(([userData, cardsData]) => {
-          setCurrentUser(userData.data);
-          // console.log(userData.data)
-          // console.log(cardsData.data)
-          setInitialCards(cardsData.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [isLoggedIn]);
+  
 
   function onSignOut() {
     localStorage.removeItem("jwt");

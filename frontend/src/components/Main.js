@@ -55,10 +55,10 @@ function Main({
 
       <section className='elements'>
         <ul className='elements__container'>
-          {cards.map((data) => (
+          {cards.map((item) => (
             <Card
-            data={data}
-              key={data._id}
+              data={item}
+              key={item._id}
               onCardLike={onCardLike}
               onCardDelete={onCardDelete}
               onCardClick={onCardClick}

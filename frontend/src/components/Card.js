@@ -3,9 +3,10 @@ import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
 
 function Card({ data, onCardLike, onCardDelete, onCardClick }) {
   const currentUser = React.useContext(CurrentUserContext);
-  const isOwn = data.owner === currentUser._id;
-  const isLiked = data.likes.some(i => i === currentUser._id);
-  console.log(data.likes.some)
+  const isOwn = data.owner === currentUser.id;
+ 
+  const isLiked = data.likes.some(i => i === currentUser.id);
+ 
   const cardDeleteButtonClassName = `element__delete-icon ${
     isOwn ? "element__delete-icon" : ""
   }`;
@@ -26,7 +27,7 @@ function Card({ data, onCardLike, onCardDelete, onCardClick }) {
   }
 
   return (
-    <li className='element' key={data._id}>
+    <li className='element'>
       <div onClick={handleClick}>
         <img className='element__photo' src={data.link} alt={data.name} />
       </div>
