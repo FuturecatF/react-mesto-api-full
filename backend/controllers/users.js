@@ -9,7 +9,7 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((user) => res.send(user))
+    .then((users) => res.send(users))
     .catch(next);
 };
 

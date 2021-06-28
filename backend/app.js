@@ -8,10 +8,6 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
 
-/* const corsOptions = {
-  origin: 'https://futurecat.nomoredomains.club',
-}; */
-
 const app = express();
 app.use(cors());
 const { login, createUser } = require('./controllers/users');
@@ -26,10 +22,10 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useFindAndModify: false,
   useUnifiedTopology: true,
 });
-/* app.use((req, res, next) => {
+app.use((req, res, next) => {
   res.header('Access-Control-Max-Age', '86400');
   next();
-}); */
+});
 
 app.use(errors());
 app.use(requestLogger);

@@ -75,6 +75,6 @@ export const api = new Api({
   baseUrl: "https://api.futurecat.nomoredomains.club",
   headers: {
     authorization: `Bearer ${localStorage.getItem('jwt')}`,
-    "content-type": "application/json",  
+    "content-type": "application/json",
   },
 });

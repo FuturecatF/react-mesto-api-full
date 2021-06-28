@@ -38,6 +38,8 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [email, setEmail] = React.useState("");
 
+  
+
   React.useEffect(() => {
     if (isLoggedIn) {
       api.getUserProfile()
@@ -62,6 +64,11 @@ function App() {
     }
   }, [isLoggedIn]);
 
+  React.useEffect(() => {
+    handleTokenCheck();
+  }, [isLoggedIn]);
+  
+
   const handleTokenCheck = () => {
     const jwt = localStorage.getItem("jwt");
     if (jwt) {
@@ -69,8 +76,9 @@ function App() {
         .checkToken(jwt)
         .then((data) => {
           if (data) {
-            setEmail(data.email);
             setIsLoggedIn(true);
+            setEmail(data.email);
+            setCurrentUser(data); 
           }
         })
         .catch((err) => {
@@ -85,8 +93,10 @@ function App() {
     }
   };
 
+  
+
   function handleCardLike(card) {
-    const isLiked = card.likes.some((i) =>  i === currentUser._id );
+    const isLiked = card.likes.some((i) => i === currentUser._id );
     api
       .changeLikeCardStatus(card._id, isLiked)
       .then((newCard) => {
@@ -206,8 +216,8 @@ function App() {
   function onLogin(email, password) {
     auth
       .getLogin(email, password)
-      .then((data) => {
-        localStorage.setItem("jwt", data.token);
+      .then((res) => {
+        localStorage.setItem("jwt", res.token);
         setIsLoggedIn(true);
         setEmail(email);
         history.push("/");
@@ -223,9 +233,7 @@ function App() {
       });
   }
 
-  React.useEffect(() => {
-    handleTokenCheck();
-  }, []);
+  
 
   
 
