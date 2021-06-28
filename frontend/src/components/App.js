@@ -6,7 +6,7 @@ import Main from "./Main.js";
 import Footer from "./Footer.js";
 import ImagePopup from "./ImagePopup.js";
 import { api } from "../utils/api.js";
-import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
@@ -37,12 +37,59 @@ function App() {
   const history = useHistory();
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const [email, setEmail] = React.useState("");
+  const [isJwt, setCurrentJwt] = React.useState('')
 
-  
+  function onRegister(email, password) {
+    auth
+      .getRegister(password, email)
+      .then(() => {
+        handleInfoTooltipContent({
+          img: successIcon,
+          text: "Вы успешно зарегистрировались!",
+        });
+
+        setIsInfoTooltipPopupOpen(true);
+        history.push("/sign-in");
+        setTimeout(closeAllPopups, 2500);
+      })
+      .catch((err) => {
+        handleInfoTooltipContent({
+          img: errorIcon,
+          text: "Что-то пошло не так! Попробуйте ещё раз.",
+        });
+        setIsInfoTooltipPopupOpen(true);
+        console.log(err);
+      });
+  }
+
+  function onLogin(email, password) {
+    auth
+      .getLogin(email, password)
+      .then((res) => {
+        localStorage.setItem("jwt", res.token);
+        setIsLoggedIn(true);
+        setEmail(email);
+       // history.push("/");
+      })
+      .catch((err) => {
+        console.log(err.status);
+        if (err.status === 400) {
+          return console.log("не передано одно из полей");
+        } else if (err.status === 401) {
+          return console.log("пользователь с email не найден");
+        }
+        return console.log(err.status);
+      });
+  }
+
+
+  React.useEffect(() => {
+    handleTokenCheck();
+  }, [isLoggedIn]);
 
   React.useEffect(() => {
     if (isLoggedIn) {
-      api.getUserProfile()
+      api.getUserProfile(isJwt)
       .then((data) => {
         setCurrentUser(data)    
     })
@@ -50,11 +97,11 @@ function App() {
       console.log(err);
     });
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, isJwt]);
 
   React.useEffect(() => {
     if (isLoggedIn) {
-     api.getInitialCards()
+     api.getInitialCards(isJwt)
       .then((cards) => { 
         setInitialCards(cards);
       })
@@ -62,44 +109,12 @@ function App() {
         console.log(err);
       });
     }
-  }, [isLoggedIn]);
-
-  React.useEffect(() => {
-    handleTokenCheck();
-  }, [isLoggedIn]);
-  
-
-  const handleTokenCheck = () => {
-    const jwt = localStorage.getItem("jwt");
-    if (jwt) {
-      auth
-        .checkToken(jwt)
-        .then((data) => {
-          if (data) {
-            setIsLoggedIn(true);
-            setEmail(data.email);
-            setCurrentUser(data);
-           // setInitialCards(cards);
-          }
-        })
-        .catch((err) => {
-          console.log(err.status);
-          if (err.status === 401) {
-            return console.log("Переданный токен некорректен ");
-          } else if (!jwt) {
-            return console.log("Токен не передан или передан не в том формате");
-          }
-          return console.log("error 500");
-        });
-    }
-  };
-
-  
+  }, [isLoggedIn, isJwt]);
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i === currentUser._id );
     api
-      .changeLikeCardStatus(card._id, isLiked)
+      .changeLikeCardStatus(card._id, isLiked, isJwt)
       .then((newCard) => {
         setInitialCards((state) =>
           state.map((c) => (c._id === card._id ? newCard : c))
@@ -145,7 +160,7 @@ function App() {
     setIsSaving(true);
 
     api
-      .deleteCard(deletedCard._id)
+      .deleteCard(deletedCard._id, isJwt)
 
       .then(() => {
         setInitialCards((cards) =>
@@ -160,7 +175,7 @@ function App() {
   function handleUpdateUser(data) {
     setIsSaving(true);
     api
-      .setUserProfile(data)
+      .setUserProfile(data, isJwt)
       .then((data) => setCurrentUser(data))
       .then(() => closeAllPopups())
       .catch((err) => console.log(err))
@@ -170,7 +185,7 @@ function App() {
   function handleUpdateAvatar(avatar) {
     setIsSaving(true);
     api
-      .setUserAvatar(avatar)
+      .setUserAvatar(avatar, isJwt)
       .then((avatar) => setCurrentUser(avatar))
       .then(() => closeAllPopups())
       .catch((err) => console.log(err))
@@ -180,7 +195,7 @@ function App() {
   function handleAddPlaceSubmit(card) {
     setIsSaving(true);
     api
-      .postNewCard(card)
+      .postNewCard(card, isJwt)
       .then((card) => setInitialCards([card, ...cards]))
       .then(() => closeAllPopups())
       .catch((err) => console.log(err))
@@ -191,48 +206,30 @@ function App() {
     setMessage({ img: img, text: text });
   }
 
-  function onRegister(email, password) {
-    auth
-      .getRegister(password, email)
-      .then(() => {
-        handleInfoTooltipContent({
-          img: successIcon,
-          text: "Вы успешно зарегистрировались!",
-        });
 
-        setIsInfoTooltipPopupOpen(true);
-        history.push("/sign-in");
-        setTimeout(closeAllPopups, 2500);
-      })
-      .catch((err) => {
-        handleInfoTooltipContent({
-          img: errorIcon,
-          text: "Что-то пошло не так! Попробуйте ещё раз.",
+  const handleTokenCheck = () => {
+    const jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      auth
+        .checkToken(jwt)
+        .then((data) => {
+          if (data) {
+            setCurrentJwt(jwt);
+            setIsLoggedIn(true);
+            setEmail(data.email);
+          }
+        })
+        .catch((err) => {
+          console.log(err.status);
+          if (err.status === 401) {
+            return console.log("Переданный токен некорректен ");
+          } else if (!jwt) {
+            return console.log("Токен не передан или передан не в том формате");
+          }
+          return console.log("error 500");
         });
-        setIsInfoTooltipPopupOpen(true);
-        console.log(err);
-      });
-  }
-
-  function onLogin(email, password) {
-    auth
-      .getLogin(email, password)
-      .then((res) => {
-        localStorage.setItem("jwt", res.token);
-        setIsLoggedIn(true);
-        setEmail(email);
-        history.push("/");
-      })
-      .catch((err) => {
-        console.log(err.status);
-        if (err.status === 400) {
-          return console.log("не передано одно из полей");
-        } else if (err.status === 401) {
-          return console.log("пользователь с email не найден");
-        }
-        return console.log(err.status);
-      });
-  }
+    }
+  };
 
   
 
@@ -259,8 +256,7 @@ function App() {
 
           <Switch>
             <ProtectedRoute
-              exact
-              path='/'
+              exact path='/'
               component={Main}
               isLoggedIn={isLoggedIn}
               onEditAvatar={handleEditAvatarClick}

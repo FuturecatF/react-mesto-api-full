@@ -1,7 +1,6 @@
 class Api {
   constructor(apiOptions) {
     this._baseUrl = apiOptions.baseUrl;
-    this._headers = apiOptions.headers;
   }
 
   _getResponseData(res) {
@@ -11,61 +10,85 @@ class Api {
     return res.json();
   }
 
-  getInitialCards() {
+  getInitialCards(jwt) {
     return fetch(`${this._baseUrl}/cards`, {
       method: "GET",
-      headers: this._headers,
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      }
     }).then(this._getResponseData);
   }
 
-  postNewCard(data) {
+  postNewCard(data, jwt) {
     return fetch(`${this._baseUrl}/cards`, {
       method: "POST",
-      headers: this._headers,
+      headers: {
+        "Content-type": "application/json",
+         Authorization: `Bearer ${jwt}`
+      }, 
       body: JSON.stringify(data),
     }).then(this._getResponseData);
   }
 
-  getUserProfile() {
+  getUserProfile(jwt) {
     return fetch(`${this._baseUrl}/users/me`, {
       method: "GET",
-      headers: this._headers,
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${jwt}`,
+      },
     }).then(this._getResponseData);
   }
 
-  setUserProfile(data) {
+  setUserProfile(data, jwt) {
     return fetch(`${this._baseUrl}/users/me`, {
       method: "PATCH",
-      headers: this._headers,
+      headers: {
+        "Content-type": "application/json",
+         Authorization: `Bearer ${jwt}`
+      },
       body: JSON.stringify(data),
     }).then(this._getResponseData);
   }
 
-  deleteCard(cardId) {
+  deleteCard(cardId, jwt) {
     return fetch(`${this._baseUrl}/cards/${cardId}`, {
       method: "DELETE",
-      headers: this._headers,
+      headers: {
+        "Content-type": "application/json",
+         Authorization: `Bearer ${jwt}`
+      },
     }).then(this._getResponseData);
   }
 
-  changeLikeCardStatus(id, isLiked) {
+  changeLikeCardStatus(id, isLiked, jwt) {
     if (!isLiked) {
       return fetch(`${this._baseUrl}/cards/${id}/likes`, {
         method: "PUT",
-        headers: this._headers,
+        headers: {
+          "Content-type": "application/json",
+           Authorization: `Bearer ${jwt}`
+        },
       }).then(this._getResponseData);
     } else {
       return fetch(`${this._baseUrl}/cards/${id}/likes`, {
         method: "DELETE",
-        headers: this._headers,
+        headers: {
+          "Content-type": "application/json",
+           Authorization: `Bearer ${jwt}`
+        },
       }).then(this._getResponseData);
     }
   }
 
-  setUserAvatar(avatar) {
+  setUserAvatar(avatar, jwt) {
     return fetch(`${this._baseUrl}/users/me/avatar`, {
       method: "PATCH",
-      headers: this._headers,
+      headers: {
+        "Content-type": "application/json",
+         Authorization: `Bearer ${jwt}`
+      },
       body: JSON.stringify(avatar),
     }).then(this._getResponseData);
   }
@@ -73,8 +96,7 @@ class Api {
 
 export const api = new Api({
   baseUrl: "https://api.futurecat.nomoredomains.club",
-  headers: {
-    authorization: `Bearer ${localStorage.getItem('jwt')}`,
-    "content-type": "application/json",
-  },
+  /* headers: {
+    "Content-type": "application/json",
+  }, */
 });
