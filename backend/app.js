@@ -7,7 +7,7 @@ const { errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const { DB_ADDRESS, PORT = 3000 } = process.env;
+const { DB_ADDRESS = 'mongodb://localhost:27017/mestodb', PORT = 3000 } = process.env;
 
 const app = express();
 app.use(cors());
