@@ -78,7 +78,8 @@ function App() {
           if (data) {
             setIsLoggedIn(true);
             setEmail(data.email);
-            setCurrentUser(data); 
+            setCurrentUser(data);
+           // setInitialCards(cards);
           }
         })
         .catch((err) => {
