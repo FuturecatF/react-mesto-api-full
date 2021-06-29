@@ -39,7 +39,7 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new CastError('Карточка с указанным _id не найдена'));
+        next(new CastError('Некорректный _id'));
       }
       throw new NotFoundError(err.message);
     })
