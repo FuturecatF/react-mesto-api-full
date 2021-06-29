@@ -10,12 +10,12 @@ class Api {
     return res.json();
   }
 
-  getInitialCards(jwt) {
+  getInitialCards() {
     return fetch(`${this._baseUrl}/cards`, {
       method: "GET",
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
       }
     }).then(this._getResponseData);
   }
@@ -31,12 +31,12 @@ class Api {
     }).then(this._getResponseData);
   }
 
-  getUserProfile(jwt) {
+  getUserProfile() {
     return fetch(`${this._baseUrl}/users/me`, {
       method: "GET",
       headers: {
         "Content-type": "application/json",
-        Authorization: `Bearer ${jwt}`,
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
       },
     }).then(this._getResponseData);
   }

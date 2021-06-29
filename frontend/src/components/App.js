@@ -82,14 +82,9 @@ function App() {
       });
   }
 
-
-  React.useEffect(() => {
-    handleTokenCheck();
-  }, [isLoggedIn]);
-
   React.useEffect(() => {
     if (isLoggedIn) {
-      api.getUserProfile(isJwt)
+      api.getUserProfile()
       .then((data) => {
         setCurrentUser(data)    
     })
@@ -97,11 +92,11 @@ function App() {
       console.log(err);
     });
     }
-  }, [isLoggedIn, isJwt]);
+  }, [isLoggedIn]);
 
   React.useEffect(() => {
     if (isLoggedIn) {
-     api.getInitialCards(isJwt)
+     api.getInitialCards()
       .then((cards) => { 
         setInitialCards(cards);
       })
@@ -109,7 +104,7 @@ function App() {
         console.log(err);
       });
     }
-  }, [isLoggedIn, isJwt]);
+  }, [isLoggedIn]);
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i === currentUser._id );
@@ -207,7 +202,7 @@ function App() {
   }
 
 
-  const handleTokenCheck = () => {
+  React.useEffect(() => {
     const jwt = localStorage.getItem("jwt");
     if (jwt) {
       auth
@@ -229,7 +224,7 @@ function App() {
           return console.log("error 500");
         });
     }
-  };
+  }, [isLoggedIn]);
 
   
 
